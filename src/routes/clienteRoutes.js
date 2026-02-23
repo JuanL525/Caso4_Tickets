@@ -1,5 +1,4 @@
 import express from 'express';
-import checkAuth from '../middleware/checkAuth.js';
 
 import {
     agregarCliente,
@@ -13,13 +12,13 @@ const router = express.Router();
 
 router
     .route("/")
-    .post(checkAuth, agregarCliente)
-    .get(checkAuth, verClientes)
+    .post(agregarCliente)
+    .get(verClientes)
 
 router
     .route("/:id")
-    .get(checkAuth, verCliente)
-    .put(checkAuth, actualizarCliente)
-    .delete(checkAuth, eliminarCliente)
+    .get(verCliente)
+    .put(actualizarCliente)
+    .delete(eliminarCliente)
 
 export default router;
