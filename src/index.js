@@ -1,6 +1,6 @@
 import express from 'express';
-import conectarDB from './config/db.js';
 import dotenv from 'dotenv';
+import conectarDB from './config/db.js';
 import cors from 'cors';
 
 import usuarioRoutes from './routes/usuarioRoutes.js';
@@ -8,38 +8,36 @@ import tecnicoRoutes from './routes/tecnicoRoutes.js';
 import clienteRoutes from './routes/clienteRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
 
-const app = express();
-
-const whitelist = [ 'http://127.0.0.1:5501', 'http://localhost:5501', 'http://127.0.0.1:4000', 'http://localhost:4000' ];
-
-const corsOptions = {
-    origin: function (origin, callback) {
-    if (!origin || whitelist.includes(origin)) {
-        callback(null, true);
-    } else {
-        callback(new Error('No permitido por CORS'));
-    }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
+// 1. Cargar variables de entorno al principio
 dotenv.config();
 
+const app = express();
+
+// 2. CORS Abierto (Solución definitiva para el examen)
+app.use(cors({
+    origin: "*",
+    credentials: false
+}));
+
+// 3. Habilitar lectura de JSON
+app.use(express.json());
+
+// 4. Conectar a la Base de Datos
 conectarDB();
 
-//Rutas
-app.use('/api/usuarios/', usuarioRoutes);
+// 5. Ruta de bienvenida (Para verificar que el servidor vive)
+app.get('/', (req, res) => {
+    res.send('Bienvenido a la API del Sistema de Soporte Técnico y Tickets 🛠️');
+});
+
+// 6. Rutas de la API
+app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/tecnicos', tecnicoRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/tickets', ticketRoutes);
 
-const PORT= process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
